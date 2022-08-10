@@ -1,6 +1,8 @@
 package bankingapplication.service;
 
 import bankingapplication.dto.AccountDto;
+import bankingapplication.dto.CustomerDto;
+import bankingapplication.entity.Customer;
 import java.util.List;
 
 public interface AccountService {
@@ -18,4 +20,5 @@ public interface AccountService {
   String deleteAccount(Long accountId);
 
   List<AccountDto> getAllByBankId(Long bankId);
+
 }

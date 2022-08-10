@@ -1,8 +1,10 @@
 package bankingapplication.service.impl;
 
 import bankingapplication.constant.ApplicationConstant;
+import bankingapplication.entity.Account;
 import bankingapplication.entity.Transaction;
 import bankingapplication.exception.BankException;
+import bankingapplication.repo.AccountRepo;
 import bankingapplication.repo.TransactionRepo;
 import bankingapplication.service.TransactionService;
 import java.time.LocalDate;
@@ -16,12 +18,18 @@ public class TransactionImplService implements TransactionService {
 
   @Autowired
   private TransactionRepo transactionRepo;
+  @Autowired
+  private AccountRepo accountRepo;
 
   @Override
-  public List<Transaction> transaction(Long accNo) {
+  public List<Transaction> transaction(String accNo) {
+    Account byAccNo = accountRepo.findByAccNo(accNo);
+    if (byAccNo==null){
+      throw new BankException(ApplicationConstant.ACCOUNT_NOT_FOUND,HttpStatus.NOT_FOUND);
+    }
     List<Transaction> transactions = transactionRepo.findByAccountNumberFrom(accNo);
     if(transactions.isEmpty()){
-      throw  new BankException("No any Transaction For Given Id",HttpStatus.BAD_REQUEST);
+      throw  new BankException(ApplicationConstant.NO_TRANSACTION,HttpStatus.BAD_REQUEST);
     }else return transactions;
   }
 

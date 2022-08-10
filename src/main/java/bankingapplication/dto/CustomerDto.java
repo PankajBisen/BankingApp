@@ -1,5 +1,6 @@
 package bankingapplication.dto;
 
+import bankingapplication.entity.Bank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,5 @@ public class CustomerDto {
   private String aadhaarNumber;
   private String mobileNumber;
   private String emailId;
+  private Long bankId;
 }

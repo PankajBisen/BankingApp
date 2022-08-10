@@ -2,6 +2,7 @@ package bankingapplication.service.impl;
 
 import bankingapplication.constant.ApplicationConstant;
 import bankingapplication.dto.AccountDto;
+import bankingapplication.dto.CustomerDto;
 import bankingapplication.entity.Account;
 import bankingapplication.entity.Bank;
 import bankingapplication.entity.Customer;
@@ -15,6 +16,7 @@ import bankingapplication.repo.CustomerRepo;
 import bankingapplication.repo.TransactionRepo;
 import bankingapplication.service.AccountService;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -43,7 +45,6 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public String saveAccountNo(AccountDto accountDto) {
-
 
     Account account = dtoToEntity(accountDto);
     List<Account> byCustomerAndBankAndAccountType = accountRepo.findByUserInfoAndBankAndAccountType(
@@ -82,7 +83,6 @@ public class AccountServiceImpl implements AccountService {
     account.setIfscCode(accountDto.getIfscCode());
     account.setAmount(accountDto.getAmount());
     account.setAccNo(accountDto.getAccNo());
-    account.setBlocked(accountDto.isBlocked());
     account.setName(accountDto.getName());
     account.setAccountType(accountDto.getAccountType());
     Bank byId = bankRepo.findById(accountDto.getBankId()).orElse(null);
@@ -103,7 +103,7 @@ public class AccountServiceImpl implements AccountService {
   }
 
   public List<AccountDto> getAccount(String content) {
-    List<Account> accounts = accountRepo.findByTitleContent(content);
+    List<Account> accounts = accountRepo.findByTitleContent("%" + content + "%");
     if (accounts.isEmpty()) {
       throw new BankException(ApplicationConstant.ACCOUNT_NOT_FOUND, HttpStatus.NOT_FOUND);
     } else {
@@ -153,6 +153,7 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
+
   //@Scheduled(cron = "0 0/1 * * * *")
   @Scheduled(cron = "0 0 0 * * *")
   public void interest() {
@@ -183,6 +184,4 @@ public class AccountServiceImpl implements AccountService {
     BeanUtils.copyProperties(account, accountDto);
     return accountDto;
   }
-
-
 }

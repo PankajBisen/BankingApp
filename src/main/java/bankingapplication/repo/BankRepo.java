@@ -18,7 +18,7 @@ public interface BankRepo extends JpaRepository<Bank, Long> {
   //@Query(value = "select * from Bank  WHERE CONVERT(bankId ,CHAR) LIKE '%bankId%' OR bankName like bankNm",nativeQuery = true)
   //List<Bank> findByBankIdLikeOrBankNameLikeOrIfscCodeLike(Long bankId,String bankName,String ifscCode);
 
-  @Query(value = "select * from Bank  WHERE bank_id like :key or bank_name like :key or ifsc_code like :key ", nativeQuery = true)
+  @Query(value = "select * from Bank_save  WHERE bank_id like :key or bank_name like :key or ifsc_code like :key ", nativeQuery = true)
   List<Bank> findByTitleContent(@Param("key") String content);
 
 }

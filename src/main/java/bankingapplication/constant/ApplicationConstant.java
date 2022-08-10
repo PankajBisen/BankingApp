@@ -33,5 +33,7 @@ public class ApplicationConstant {
   public static final String CUSTOMER_DELETED = "Customer Deleted";
   public static final String MOBILE_NUMBER_OR_EMAILID_NOT_UNIQUE = "Mobile Number Or EmailId Is not unique";
   public static final String CHECK_MOBILE_NUMBER = "Check mobileNumber";
+  public static final String NO_TRANSACTION = "No Transaction For Given AccountNumber";
+  public static final String NO_CUSTOMER_FOR_GIVEN_BANK_ID = "No customers for given bank id";
 
 }

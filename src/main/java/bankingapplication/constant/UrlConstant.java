@@ -8,6 +8,7 @@ public class UrlConstant {
   public static final String GET_ALL = "/getAll";
   public static final String UPDATE_CUSTOMER = "/update/{customerId}";
   public static final String DELETE_CUSTOMER = "/delete/{customerId}";
+  public static final String GET_ALL_CUSTOMERS_WITHOUT_ACCOUNTS = "getAllCustomersWithoutAccount/{bankId}";
 
   public static final String BANK = "/bank";
   public static final String CREATE_BANK = "/creat";
@@ -25,7 +26,7 @@ public class UrlConstant {
   public static final String GET_ALL_BANK_BY_ID = "/getAllByBankId/{bankId}";
 
   public static final String TRANSFER_MONEY = "/transfer";
-  public static final String ACCOUNT_TRANSACTION_BY_ID = "/accountTransaction/{accNo}";
+    public static final String ACCOUNT_TRANSACTION_BY_ID = "/accountTransaction/{accNo}";
   public static final String TRANSACTION_BY_DAYS = "/sevenDaysTransaction/{numberOfDays}";
 
 

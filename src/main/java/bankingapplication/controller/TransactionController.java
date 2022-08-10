@@ -20,7 +20,7 @@ public class TransactionController {
   private TransactionService transactionService;
 
   @GetMapping(UrlConstant.ACCOUNT_TRANSACTION_BY_ID)
-  public ResponseEntity<List<Transaction>> transaction(@PathVariable Long accNo) {
+  public ResponseEntity<List<Transaction>> transaction(@PathVariable String accNo) {
     List<Transaction> transactions = transactionService.transaction(accNo);
     return new ResponseEntity<>(transactions, HttpStatus.OK);
   }

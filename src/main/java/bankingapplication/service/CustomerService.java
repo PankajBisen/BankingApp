@@ -19,4 +19,6 @@ public interface CustomerService {
   String updateCustomer(CustomerDto customerDto, Long customerId);
 
   String deleteCustomer(Long customerId);
+
+  List<CustomerDto> getAllCustomer(Long bankId);
 }

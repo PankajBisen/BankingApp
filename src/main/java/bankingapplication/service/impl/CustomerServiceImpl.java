@@ -4,17 +4,20 @@ import bankingapplication.constant.ApplicationConstant;
 import bankingapplication.dto.CustomerDto;
 import bankingapplication.dto.MoneyTransferDto;
 import bankingapplication.entity.Account;
+import bankingapplication.entity.Bank;
 import bankingapplication.entity.Customer;
 import bankingapplication.entity.Transaction;
 import bankingapplication.enum1.SavingOrCurrentBalance;
 import bankingapplication.exception.BankException;
 import bankingapplication.repo.AccountRepo;
+import bankingapplication.repo.BankRepo;
 import bankingapplication.repo.CustomerRepo;
 import bankingapplication.repo.TransactionRepo;
 import bankingapplication.service.CustomerService;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +32,8 @@ public class CustomerServiceImpl implements CustomerService {
   private AccountRepo accountRepo;
   @Autowired
   private TransactionRepo transactionRepo;
+  @Autowired
+  private BankRepo bankRepo;
 
   public String save(CustomerDto customerDto) {
     String aadhaarNumber = String.valueOf(customerDto.getAadhaarNumber());
@@ -48,13 +53,39 @@ public class CustomerServiceImpl implements CustomerService {
       return ApplicationConstant.MOBILE_NUMBER_OR_EMAILID_NOT_UNIQUE;
     }
     if (aadhaarNumber.length() == 12 && panNumber.length() == 10 && mobileNumber.length() == 10) {
-      customerRepo.save(dtoToEntity(customerDto));
+      customerRepo.save(dtoToEntityCustomer(customerDto));
       return ApplicationConstant.CUSTOMER_CREATED;
     }
     return ApplicationConstant.INVALID_PAN_AADHAAR_NUM;
   }
 
-  private Customer dtoToEntity(CustomerDto customerDto) {
+  @Override
+  public List<CustomerDto> getAllCustomer(Long bankId) {
+    Bank bank = bankRepo.findById(bankId).orElseThrow(
+        () -> new BankException(ApplicationConstant.BANK_IS_NOT_FOUND, HttpStatus.BAD_REQUEST));
+    List<Customer> customers = customerRepo.checkCustomerByBankId(bankId);
+    if(customers.isEmpty()){
+      throw new BankException(ApplicationConstant.NO_CUSTOMER_FOR_GIVEN_BANK_ID,HttpStatus.BAD_REQUEST);
+    }
+    return customers.stream().map(this::entityToDto).collect(Collectors.toList());
+  }
+
+
+  private CustomerDto entityToDto(Customer customer) {
+    CustomerDto customerDto = new CustomerDto();
+    customerDto.setCustomerId(customer.getCustomerId());
+    customerDto.setCustomerName(customer.getCustomerName());
+    customerDto.setAddress(customer.getAddress());
+    customerDto.setAadhaarNumber(customer.getAadhaarNumber());
+    customerDto.setPanCardNumber(customer.getPanCardNumber());
+    customerDto.setMobileNumber(customer.getMobileNumber());
+    customerDto.setEmailId(customer.getEmailId());
+    customerDto.setBankId(customer.getBank().getBankId());
+    return customerDto;
+  }
+
+
+  private Customer dtoToEntityCustomer(CustomerDto customerDto) {
     Customer customerInfo = new Customer();
     customerInfo.setCustomerName(customerDto.getCustomerName());
     customerInfo.setAddress(customerDto.getAddress());
@@ -62,6 +93,13 @@ public class CustomerServiceImpl implements CustomerService {
     customerInfo.setPanCardNumber(customerDto.getPanCardNumber());
     customerInfo.setMobileNumber(customerDto.getMobileNumber());
     customerInfo.setEmailId(customerDto.getEmailId());
+    Bank byId = bankRepo.findById(customerDto.getBankId()).orElse(null);
+    if (byId == null) {
+      throw new BankException(
+          "The bank " + ApplicationConstant.ID_INVALID + customerDto.getBankId(),
+          HttpStatus.BAD_REQUEST);
+    }
+    customerInfo.setBank(byId);
     return customerInfo;
   }
 

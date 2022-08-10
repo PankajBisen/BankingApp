@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TransactionRepo extends JpaRepository<Transaction, Long> {
 
-  List<Transaction> findByAccountNumberFrom(Long accNo);
+  List<Transaction> findByAccountNumberFrom(String accNo);
 
   List<Transaction> findByDateBetween(LocalDate localDate, LocalDate endDate);
 }

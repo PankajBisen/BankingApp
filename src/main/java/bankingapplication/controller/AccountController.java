@@ -2,11 +2,15 @@ package bankingapplication.controller;
 
 import bankingapplication.constant.UrlConstant;
 import bankingapplication.dto.AccountDto;
+import bankingapplication.dto.CustomerDto;
+import bankingapplication.entity.Customer;
 import bankingapplication.service.AccountService;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +30,7 @@ public class AccountController {
   private AccountService accountService;
 
   @PostMapping(UrlConstant.ACCOUNT_CREAT)
-  public ResponseEntity<?> save(@RequestBody AccountDto accountDto) {
+  public ResponseEntity<?> save(@RequestBody @Valid AccountDto accountDto) {
     String s = accountService.saveAccountNo(accountDto);
     return new ResponseEntity<>(s, HttpStatus.CREATED);
   }

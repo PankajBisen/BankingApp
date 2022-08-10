@@ -66,4 +66,10 @@ public class CustomerController {
     String s = customerService.deleteCustomer(customerId);
     return new ResponseEntity<>(s, HttpStatus.OK);
   }
+
+  @GetMapping(UrlConstant.GET_ALL_CUSTOMERS_WITHOUT_ACCOUNTS)
+  public ResponseEntity<List<CustomerDto>> getAllCustomer(@PathVariable Long bankId){
+    List<CustomerDto> customerDtoList=customerService.getAllCustomer(bankId);
+    return new ResponseEntity<>(customerDtoList,HttpStatus.OK);
+  }
 }

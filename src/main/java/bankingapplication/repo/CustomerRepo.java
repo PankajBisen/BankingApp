@@ -19,4 +19,8 @@ public interface CustomerRepo extends JpaRepository<Customer, Long> {
   @Query(value = "select * from customer_info  WHERE customer_id like :key or customer_name like :key or mobile_number like :key or email_id like :key ", nativeQuery = true)
   List<Customer> findByTitleContent(@Param("key") String content);
 
+  @Query(value="SELECT C.* FROM practice.customer_info C \n"
+      + "LEFT JOIN practice.account_save a on a.customer_id = c.customer_id\n"
+      + "WHERE C.bank_id = :bankId and a.customer_id is null",nativeQuery = true)
+  List<Customer> checkCustomerByBankId(@Param("bankId") long bankId);
 }

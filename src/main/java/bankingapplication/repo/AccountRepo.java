@@ -22,8 +22,6 @@ public interface AccountRepo extends JpaRepository<Account, Long> {
 
   List<Account> findByUserInfo(Customer customer);
 
-  @Query(value = "select * from account  WHERE account_id like :key or acc_no like :key or  customer_id like :key ", nativeQuery = true)
+  @Query(value = "select * from account_save  WHERE  acc_no like :key", nativeQuery = true)
   List<Account> findByTitleContent(@Param("key") String content);
-
-
 }
