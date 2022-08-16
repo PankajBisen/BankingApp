@@ -27,7 +27,6 @@ public class BankController {
   @Autowired
   BankService bankService;
 
-
   @PostMapping(UrlConstant.CREATE_BANK)
   public ResponseEntity<String> saveBank(@Valid @RequestBody BankDto bankDto) {
     String s = bankService.addBank(bankDto);

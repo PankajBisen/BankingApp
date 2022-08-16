@@ -22,12 +22,12 @@ public class TransactionImplService implements TransactionService {
   private AccountRepo accountRepo;
 
   @Override
-  public List<Transaction> transaction(String accNo) {
-    Account byAccNo = accountRepo.findByAccNo(accNo);
+  public List<Transaction> transaction(String accountNumberFrom) {
+    Account byAccNo = accountRepo.findByAccNo(accountNumberFrom);
     if (byAccNo==null){
       throw new BankException(ApplicationConstant.ACCOUNT_NOT_FOUND,HttpStatus.NOT_FOUND);
     }
-    List<Transaction> transactions = transactionRepo.findByAccountNumberFrom(accNo);
+    List<Transaction> transactions = transactionRepo.findByAccountNumberFrom(accountNumberFrom);
     if(transactions.isEmpty()){
       throw  new BankException(ApplicationConstant.NO_TRANSACTION,HttpStatus.BAD_REQUEST);
     }else return transactions;
