@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,6 +35,8 @@ public class CustomerServiceImpl implements CustomerService {
   private TransactionRepo transactionRepo;
   @Autowired
   private BankRepo bankRepo;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   public String save(CustomerDto customerDto) {
     String aadhaarNumber = String.valueOf(customerDto.getAadhaarNumber());
@@ -64,8 +67,9 @@ public class CustomerServiceImpl implements CustomerService {
     Bank bank = bankRepo.findById(bankId).orElseThrow(
         () -> new BankException(ApplicationConstant.BANK_IS_NOT_FOUND, HttpStatus.BAD_REQUEST));
     List<Customer> customers = customerRepo.checkCustomerByBankId(bankId);
-    if(customers.isEmpty()){
-      throw new BankException(ApplicationConstant.NO_CUSTOMER_FOR_GIVEN_BANK_ID,HttpStatus.BAD_REQUEST);
+    if (customers.isEmpty()) {
+      throw new BankException(ApplicationConstant.NO_CUSTOMER_FOR_GIVEN_BANK_ID,
+          HttpStatus.BAD_REQUEST);
     }
     return customers.stream().map(this::entityToDto).collect(Collectors.toList());
   }
@@ -93,6 +97,7 @@ public class CustomerServiceImpl implements CustomerService {
     customerInfo.setPanCardNumber(customerDto.getPanCardNumber());
     customerInfo.setMobileNumber(customerDto.getMobileNumber());
     customerInfo.setEmailId(customerDto.getEmailId());
+    customerInfo.setPassword(passwordEncoder.encode(customerDto.getPassword()));
     Bank byId = bankRepo.findById(customerDto.getBankId()).orElse(null);
     if (byId == null) {
       throw new BankException(

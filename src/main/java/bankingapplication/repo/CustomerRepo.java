@@ -15,6 +15,7 @@ public interface CustomerRepo extends JpaRepository<Customer, Long> {
       Optional<String> aadharNumber);
 
   Customer findByMobileNumberOrEmailId(Optional<String> mobileNumber, Optional<String> emailId);
+  Customer findByEmailId(String emailId);
 
   @Query(value = "select * from customer_info  WHERE customer_id like :key or customer_name like :key or mobile_number like :key or email_id like :key ", nativeQuery = true)
   List<Customer> findByTitleContent(@Param("key") String content);

@@ -33,6 +33,7 @@ public class Customer {
   private String mobileNumber;
   @NotNull(message = "Email cannot be empty")
   private String emailId;
+  private String password;
 
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "bankId", referencedColumnName = "bankId")

@@ -20,4 +20,5 @@ public class CustomerDto {
   private String mobileNumber;
   private String emailId;
   private Long bankId;
+  private String password;
 }
