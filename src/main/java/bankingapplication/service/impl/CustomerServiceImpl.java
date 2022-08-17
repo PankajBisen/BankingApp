@@ -44,16 +44,48 @@ public class CustomerServiceImpl implements CustomerService {
     String mobileNumber = String.valueOf(customerDto.getMobileNumber());
     String emailId = String.valueOf(customerDto.getEmailId());
 
-    Customer byPanNuOrAadhaarNumOrMobileNum = customerRepo.findByPanCardNumberOrAadhaarNumber(
+    List<Customer> byPanNuOrAadhaarNumOrMobileNum = customerRepo.findByPanCardNumberOrAadhaarNumber(
         Optional.ofNullable(panNumber), Optional.ofNullable(aadhaarNumber));
-    Customer byMobileNumberOrEmailId = customerRepo.findByMobileNumberOrEmailId(
+    List<Customer> byMobileNumberOrEmailId = customerRepo.findByMobileNumberOrEmailId(
         Optional.ofNullable(mobileNumber), Optional.ofNullable(emailId));
 
+    Bank byId = bankRepo.findById(customerDto.getBankId()).orElse(null);
+    if (byId == null) {
+      throw new BankException(
+          "The bank " + ApplicationConstant.ID_INVALID + customerDto.getBankId(),
+          HttpStatus.BAD_REQUEST);
+    }
+    Optional<Customer> byAadhaarNumberAndPanCardNumberAndBank = customerRepo.findByAadhaarNumberAndPanCardNumberAndBank(
+        aadhaarNumber, panNumber, byId);
+    Customer customerFromDb = null;
+    if (byAadhaarNumberAndPanCardNumberAndBank.isPresent()) {
+      customerFromDb = byAadhaarNumberAndPanCardNumberAndBank.get();
+    }
+    if (Objects.nonNull(customerFromDb)) {
+      for (Customer customer : byPanNuOrAadhaarNumOrMobileNum) {
+        if (customer.getBank().equals(customerFromDb.getBank())) {
+          throw new BankException(String.format("You Already registered for given bank %s",
+              customer.getBank().getBankName()), HttpStatus.BAD_REQUEST);
+        }
+      }
+    }
     if (byPanNuOrAadhaarNumOrMobileNum != null) {
-      return ApplicationConstant.PAN_OR_AADHAAR_NUMBER_NOT_UNIQUE;
+      for (Customer c : byPanNuOrAadhaarNumOrMobileNum) {
+        if (c.getBank().getBankId().equals(customerDto.getBankId()) && (
+            c.getAadhaarNumber().equals(customerDto.getAadhaarNumber()) || c.getPanCardNumber()
+                .equals(customerDto.getPanCardNumber()))) {
+          return ApplicationConstant.PAN_OR_AADHAAR_NUMBER_NOT_UNIQUE;
+        }
+      }
     }
     if (byMobileNumberOrEmailId != null) {
-      return ApplicationConstant.MOBILE_NUMBER_OR_EMAILID_NOT_UNIQUE;
+      for (Customer c : byMobileNumberOrEmailId) {
+        if (c.getBank().getBankId().equals(customerDto.getBankId()) && (
+            c.getEmailId().equals(customerDto.getEmailId()) || c.getMobileNumber()
+                .equals(customerDto.getMobileNumber()))) {
+          return ApplicationConstant.MOBILE_NUMBER_OR_EMAILID_NOT_UNIQUE;
+        }
+      }
     }
     if (aadhaarNumber.length() == 12 && panNumber.length() == 10 && mobileNumber.length() == 10) {
       customerRepo.save(dtoToEntityCustomer(customerDto));
