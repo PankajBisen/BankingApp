@@ -106,6 +106,18 @@ public class CustomerServiceImpl implements CustomerService {
     return customers.stream().map(this::entityToDto).collect(Collectors.toList());
   }
 
+  @Override
+  public List<CustomerDto> getAllByBankId(Long bankId) {
+    Bank bank = bankRepo.findById(bankId).orElseThrow(
+        () -> new BankException(ApplicationConstant.BANK_IS_NOT_FOUND, HttpStatus.BAD_REQUEST));
+    List<Customer> customers = customerRepo.findByBank(bank);
+    if (customers.isEmpty()) {
+      throw new BankException("customers not found", HttpStatus.NOT_FOUND);
+    }
+    return customers.stream().map(this::entityToDto).collect(Collectors.toList());
+  }
+
+
 
   private CustomerDto entityToDto(Customer customer) {
     CustomerDto customerDto = new CustomerDto();
@@ -120,24 +132,23 @@ public class CustomerServiceImpl implements CustomerService {
     return customerDto;
   }
 
-
   private Customer dtoToEntityCustomer(CustomerDto customerDto) {
-    Customer customerInfo = new Customer();
-    customerInfo.setCustomerName(customerDto.getCustomerName());
-    customerInfo.setAddress(customerDto.getAddress());
-    customerInfo.setAadhaarNumber(customerDto.getAadhaarNumber());
-    customerInfo.setPanCardNumber(customerDto.getPanCardNumber());
-    customerInfo.setMobileNumber(customerDto.getMobileNumber());
-    customerInfo.setEmailId(customerDto.getEmailId());
-    customerInfo.setPassword(passwordEncoder.encode(customerDto.getPassword()));
+    Customer customer = new Customer();
+    customer.setCustomerName(customerDto.getCustomerName());
+    customer.setAddress(customerDto.getAddress());
+    customer.setAadhaarNumber(customerDto.getAadhaarNumber());
+    customer.setPanCardNumber(customerDto.getPanCardNumber());
+    customer.setMobileNumber(customerDto.getMobileNumber());
+    customer.setEmailId(customerDto.getEmailId());
+    customer.setPassword(passwordEncoder.encode(customerDto.getPassword()));
     Bank byId = bankRepo.findById(customerDto.getBankId()).orElse(null);
     if (byId == null) {
       throw new BankException(
           "The bank " + ApplicationConstant.ID_INVALID + customerDto.getBankId(),
           HttpStatus.BAD_REQUEST);
     }
-    customerInfo.setBank(byId);
-    return customerInfo;
+    customer.setBank(byId);
+    return customer;
   }
 
   public String transferMoney(MoneyTransferDto transferDto) {
@@ -152,14 +163,18 @@ public class CustomerServiceImpl implements CustomerService {
     }
     if (Objects.isNull(toAccount)) {
       throw new BankException(ApplicationConstant.NO_ACCOUNT_FOUND_FOR_GIVEN_ACCOUNT_NUMBER
-          + transferDto.getAccountNumberFrom(), HttpStatus.BAD_REQUEST);
+          + transferDto.getAccountNumberTo(), HttpStatus.BAD_REQUEST);
     }
     if (fromAccount.isBlocked()) {
-      return String.format("Account no%d is blocked", fromAccount.getAccNo());
+      return (String.format("Account no is blocked %s  ", fromAccount.getAccNo()));
     }
     if (!transferDto.getIfscCode().equals(toAccount.getIfscCode())) {
       return ApplicationConstant.INVALID_IFSC_CODE + ApplicationConstant.DOES_NOT_MATCH
           + transferDto.getIfscCode();
+    }
+    if (!transferDto.getAccountType().equals(toAccount.getAccountType())) {
+      return ApplicationConstant.INVALID_ACCOUNT_TYPE + ApplicationConstant.DOES_NOT_MATCH
+          + transferDto.getAccountType();
     }
     if (transferDto.getAmount() > fromAccount.getAmount()) {
       return ApplicationConstant.ACCOUNT_BALANCE_LOW;
@@ -218,21 +233,21 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  public List<Customer> getByIdAndName(String content) {
+  public List<CustomerDto> getByIdAndName(String content) {
     List<Customer> customer = customerRepo.findByTitleContent("%" + content + "%");
     if (customer.isEmpty()) {
       throw new BankException(ApplicationConstant.CUSTOMER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return customer;
+    return customer.stream().map(this::entityToDto).collect(Collectors.toList());
   }
 
   @Override
-  public List<Customer> getAllCustomer() {
+  public List<CustomerDto> getAllCustomer() {
     List<Customer> customers = customerRepo.findAll();
     if (customers.isEmpty()) {
       throw new BankException(ApplicationConstant.CUSTOMER_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
-    return customers;
+    return customers.stream().map(this::entityToDto).collect(Collectors.toList());
   }
 
   @Override
@@ -241,10 +256,9 @@ public class CustomerServiceImpl implements CustomerService {
         () -> new BankException(ApplicationConstant.CUSTOMER_NOT_FOUND, HttpStatus.BAD_REQUEST));
     customer.setCustomerName(customerDto.getCustomerName());
     customer.setAddress(customerDto.getAddress());
-    customer.setAadhaarNumber(customer.getAadhaarNumber());
-    customer.setPanCardNumber(customer.getPanCardNumber());
     customer.setEmailId(customerDto.getEmailId());
     customer.setMobileNumber(customerDto.getMobileNumber());
+    customer.setPassword(customerDto.getPassword());
     if (customerDto.getMobileNumber().length() == 10) {
       customerRepo.save(customer);
       return ApplicationConstant.CUSTOMER_UPDATED;
@@ -266,5 +280,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
     return ApplicationConstant.CUSTOMER_DELETED;
   }
+
 }
 

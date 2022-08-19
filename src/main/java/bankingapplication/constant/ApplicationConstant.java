@@ -35,5 +35,6 @@ public class ApplicationConstant {
   public static final String CHECK_MOBILE_NUMBER = "Check mobileNumber";
   public static final String NO_TRANSACTION = "No Transaction For Given AccountNumber";
   public static final String NO_CUSTOMER_FOR_GIVEN_BANK_ID = "No customers for given bank id";
+  public static final String INVALID_ACCOUNT_TYPE = "invalid account type ";
 
 }

@@ -1,4 +1,4 @@
-package bankingapplication.service;
+package bankingapplication.service.impl;
 
 import bankingapplication.entity.Customer;
 import bankingapplication.repo.CustomerRepo;
@@ -26,8 +26,6 @@ public class JwtServiceImpl {
       return new org.springframework.security.core.userdetails.User(userName, user.getPassword(),
           new ArrayList<>());
     }
-
-
   }
 
 }

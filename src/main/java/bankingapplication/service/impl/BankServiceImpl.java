@@ -55,10 +55,18 @@ public class BankServiceImpl implements BankService {
   public String updateBank(BankDto bankDto, Long bankId) {
     Bank bank = bankRepo.findById(bankId).orElseThrow(
         () -> new BankException(ApplicationConstant.BANK_IS_NOT_FOUND, HttpStatus.BAD_REQUEST));
-    BeanUtils.copyProperties(bankDto, bank);
     if (bankDto.getIfscCode().length() != 11) {
       throw new BankException(ApplicationConstant.INVALID_IFSC_CODE, HttpStatus.BAD_REQUEST);
     }
+    Bank byIfscCode = bankRepo.findByIfscCode(bankDto.getIfscCode());
+    if (!Objects.isNull(byIfscCode)) {
+      return ApplicationConstant.BANK_ALREADY_REGISTER_FOR_THIS_IFSC_CODE;
+    }
+    bank.setBankName(bankDto.getBankName());
+    bank.setAddress(bankDto.getAddress());
+    bank.setBranchName(bankDto.getBranchName());
+    bank.setCity(bankDto.getCity());
+    bank.setIfscCode(bankDto.getIfscCode());
     bankRepo.save(bank);
     return ApplicationConstant.BANK_UPDATE;
   }

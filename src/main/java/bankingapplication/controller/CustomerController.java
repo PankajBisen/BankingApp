@@ -3,9 +3,9 @@ package bankingapplication.controller;
 import bankingapplication.constant.UrlConstant;
 import bankingapplication.dto.CustomerDto;
 import bankingapplication.dto.MoneyTransferDto;
-import bankingapplication.entity.Customer;
 import bankingapplication.service.CustomerService;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -32,30 +32,30 @@ public class CustomerController {
   private final CustomerService customerService;
 
   @PostMapping(UrlConstant.CUSTOMER_CREATE)
-  public ResponseEntity<String> save(@RequestBody CustomerDto customerDto) {
+  public ResponseEntity<String> save(@Valid @RequestBody CustomerDto customerDto) {
     String s = customerService.save(customerDto);
     return new ResponseEntity<>(s, HttpStatus.CREATED);
   }
 
   @PutMapping(UrlConstant.TRANSFER_MONEY)
-  public ResponseEntity<String> transferMoney(@RequestBody MoneyTransferDto transactionDto) {
+  public ResponseEntity<String> transferMoney(@Valid @RequestBody MoneyTransferDto transactionDto) {
     String s = customerService.transferMoney(transactionDto);
     return new ResponseEntity<>(s, HttpStatus.CREATED);
   }
 
   @GetMapping(UrlConstant.GET_BY_ID_OR_NAME_OR_MOBILENO_OR_EMAILID)
-  public ResponseEntity<List<Customer>> getByIdAndName(@PathVariable String content) {
+  public ResponseEntity<List<CustomerDto>> getByIdAndName(@PathVariable String content) {
     return new ResponseEntity<>(customerService.getByIdAndName(content), HttpStatus.OK);
   }
 
   @GetMapping(UrlConstant.GET_ALL)
-  public ResponseEntity<List<Customer>> getAllCustomer() {
-    List<Customer> customers = customerService.getAllCustomer();
+  public ResponseEntity<List<CustomerDto>> getAllCustomer() {
+    List<CustomerDto> customers = customerService.getAllCustomer();
     return new ResponseEntity<>(customers, HttpStatus.OK);
   }
 
   @PutMapping(UrlConstant.UPDATE_CUSTOMER)
-  public ResponseEntity<String> updateCustomer(@RequestBody CustomerDto customerDto,
+  public ResponseEntity<String> updateCustomer(@Valid @RequestBody CustomerDto customerDto,
       @PathVariable Long customerId) {
     String s = customerService.updateCustomer(customerDto, customerId);
     return new ResponseEntity<>(s, HttpStatus.OK);
@@ -71,5 +71,10 @@ public class CustomerController {
   public ResponseEntity<List<CustomerDto>> getAllCustomer(@PathVariable Long bankId){
     List<CustomerDto> customerDtoList=customerService.getAllCustomer(bankId);
     return new ResponseEntity<>(customerDtoList,HttpStatus.OK);
+  }
+  @GetMapping(UrlConstant.GET_ALL_CUSTOMER_BY_BANK_ID)
+  public ResponseEntity<List<CustomerDto>> getAllByBankId(@PathVariable Long bankId) {
+    List<CustomerDto> accounts = customerService.getAllByBankId(bankId);
+    return new ResponseEntity<>(accounts, HttpStatus.OK);
   }
 }

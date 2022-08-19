@@ -27,7 +27,7 @@ public class AccountController {
   private AccountService accountService;
 
   @PostMapping(UrlConstant.ACCOUNT_CREAT)
-  public ResponseEntity<?> save(@RequestBody @Valid AccountDto accountDto) {
+  public ResponseEntity<?> save(@Valid @RequestBody AccountDto accountDto) {
     String s = accountService.saveAccountNo(accountDto);
     return new ResponseEntity<>(s, HttpStatus.CREATED);
   }

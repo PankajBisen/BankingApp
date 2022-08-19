@@ -41,7 +41,7 @@ public class BankController {
 
 
   @PutMapping(UrlConstant.BANK_UPDATE)
-  public ResponseEntity<String> updateBank(@RequestBody BankDto bankDto,
+  public ResponseEntity<String> updateBank(@Valid @RequestBody BankDto bankDto,
       @PathVariable Long bankId) {
     String s = bankService.updateBank(bankDto, bankId);
     return new ResponseEntity<>(s, HttpStatus.OK);

@@ -9,7 +9,7 @@ public class BankDto {
 
   @NotNull(message = "the bankName  is required")
   private String bankName;
-  @Pattern(regexp = "^[A-Za-z]{4}\\d{7}$", message = "Invalid format")
+  @Pattern(regexp = "^[A-Z]{4}\\d{7}$", message = "Invalid IFSC format")
   private String ifscCode;
   @NotNull(message = "the branchName is required")
   private String branchName;

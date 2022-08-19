@@ -153,8 +153,6 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-
-  //@Scheduled(cron = "0 0/1 * * * *")
   @Scheduled(cron = "0 0 0 * * *")
   public void interest() {
     accountRepo.findAll().stream().filter(Objects::nonNull).forEach(ele -> {

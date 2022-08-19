@@ -11,19 +11,9 @@ public class CorsConfiguration {
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("*")
-            .allowedOrigins("*")
+        registry.addMapping("/api/**")
+            .allowedOrigins("*").allowedHeaders("*").exposedHeaders("*")
             .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS")
-            .allowedHeaders("Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
-                "Access-Control-Request-Headers")
-            .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
-            .allowCredentials(false).maxAge(3600);
-        registry.addMapping("/*")
-            .allowedOrigins("*")
-            .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS")
-            .allowedHeaders("Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
-                "Access-Control-Request-Headers")
-            .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
             .allowCredentials(false).maxAge(3600);
       }
     };

@@ -36,8 +36,8 @@ public class TransactionImplService implements TransactionService {
   @Override
   public List<Transaction> transactionByDays(Long numberOfDays) {
     LocalDate localDate = LocalDate.now();
-    LocalDate endDate = localDate.plusDays(numberOfDays);
-    List<Transaction> transactions = transactionRepo.findByDateBetween(localDate, endDate);
+    LocalDate endDate = localDate.minusDays(numberOfDays);
+    List<Transaction> transactions = transactionRepo.findByDateBetween(endDate, localDate);
     if (transactions.isEmpty()) {
       throw new BankException(ApplicationConstant.NO_TRANSACTION_IN_BETWEEN_DAYS,
           HttpStatus.BAD_REQUEST);
