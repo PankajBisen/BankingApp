@@ -18,10 +18,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class Transaction {
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-  @JsonFormat(pattern="yyyy-MM-dd")
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDate date;
   private String accountNumberFrom;
   private String accountNumberTo;

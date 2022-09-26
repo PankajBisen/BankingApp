@@ -2,7 +2,6 @@ package bankingapplication.service.impl;
 
 import bankingapplication.constant.ApplicationConstant;
 import bankingapplication.dto.AccountDto;
-import bankingapplication.dto.CustomerDto;
 import bankingapplication.entity.Account;
 import bankingapplication.entity.Bank;
 import bankingapplication.entity.Customer;
@@ -16,7 +15,6 @@ import bankingapplication.repo.CustomerRepo;
 import bankingapplication.repo.TransactionRepo;
 import bankingapplication.service.AccountService;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
