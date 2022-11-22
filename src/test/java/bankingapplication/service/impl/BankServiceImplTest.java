@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +45,21 @@ class BankServiceImplTest {
         Mockito.when(bankRepo.findByIfscCode (bankDto.getIfscCode())).thenReturn( null);
         Mockito.when( bankRepo.save (bank)).thenReturn(bank);
         assertEquals(ApplicationConstant.BANK_CREATED, bankService.addBank(bankDto));
+
+        bankDto.setIfscCode ("Aesv123456");
+        BankException bankException = assertThrows(BankException.class,
+                () -> bankService.addBank(bankDto));
+        assertEquals(HttpStatus.BAD_REQUEST,bankException.getHttpStatus());
+
+        Bank bank1=new Bank();
+        BankDto bankDto1 =new BankDto();
+        bankDto1.setBankName("ICICI");
+        bankDto1.setIfscCode ("Aesv1234567");
+        bankDto1.setCity("Nagpur");
+        bankDto1.setAddress("SAINAgar");
+        bankDto1.setBranchName("BhavaniMandir");
+        Mockito.when(bankRepo.findByIfscCode (bankDto1.getIfscCode())).thenReturn( bank1);
+        assertEquals(ApplicationConstant.BANK_ALREADY_REGISTER_FOR_THIS_IFSC_CODE,bankService.addBank(bankDto1));
     }
 
     @Test
@@ -53,6 +69,14 @@ class BankServiceImplTest {
         bankList.add(bank);
         Mockito.when(bankRepo.findByTitleContent (Mockito.anyString())).thenReturn(bankList);
         assertEquals(bankList.size(), bankService.getBankById(  "Pankaj").size());
+
+        List<Bank> bankList1=new ArrayList<>();
+        Mockito.when(bankRepo.findByTitleContent (Mockito.anyString())).thenReturn(bankList1);
+        BankException bankException = assertThrows(BankException.class,
+                () -> bankService.getBankById("pankaj"));
+        assertEquals(HttpStatus.NOT_FOUND,bankException.getHttpStatus());
+
+
     }
 
     @Test

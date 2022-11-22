@@ -12,7 +12,6 @@ import bankingapplication.repo.AccountRepo;
 import bankingapplication.repo.BankRepo;
 import bankingapplication.repo.CustomerRepo;
 import bankingapplication.repo.TransactionRepo;
-import bankingapplication.service.CustomerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -62,6 +61,7 @@ class CustomerServiceImplTest {
         List<Customer> customerList = new ArrayList<>();
         customerList.add(customer);
         Bank bank = new Bank();
+
         Mockito.when( customerRepo.findByPanCardNumberOrAadhaarNumber(
                 Optional.of(customerDto.getAadhaarNumber()),
                 Optional.of(customerDto.getPanCardNumber()))).thenReturn(customerList);
@@ -72,6 +72,11 @@ class CustomerServiceImplTest {
                         customerDto.getAadhaarNumber(), customerDto.getPanCardNumber(), bank))
                 .thenReturn(Optional.of(new Customer()));
         assertEquals(ApplicationConstant.CUSTOMER_CREATED, customerService.save(customerDto));
+
+        Mockito.when(bankRepo.findById(customerDto.getBankId())).thenReturn(Optional.empty());
+        BankException bankException = assertThrows(BankException.class,
+                () -> customerService.save(customerDto));
+        assertEquals(HttpStatus.BAD_REQUEST,bankException.getHttpStatus());
     }
 
     @Test
@@ -95,6 +100,11 @@ class CustomerServiceImplTest {
         customerDto.setBankId (1l);
         Mockito.when(customerRepo.findAll()).thenReturn(customerList);
         assertEquals(customerListDto.size(), customerService.getAllCustomer().size());
+
+        List<Customer> customerList1 = new ArrayList<>();
+        Mockito.when(customerRepo.findAll()).thenReturn(customerList1);
+        BankException bankException = assertThrows(BankException.class, () -> customerService.getAllCustomer());
+        assertEquals(HttpStatus.BAD_REQUEST,bankException.getHttpStatus());
     }
 
     @Test
@@ -119,6 +129,12 @@ class CustomerServiceImplTest {
         Mockito.when(bankRepo.findById(1L)).thenReturn(Optional.of(bank));
         Mockito.when(customerRepo.findByBank (bank)).thenReturn(customerList);
         assertEquals(customerDtoList.size(), customerService.getAllByBankId(1L).size());
+
+        Mockito.when(bankRepo.findById(1L)).thenReturn(Optional.empty());
+        BankException bankException = assertThrows(BankException.class,
+                () -> customerService.getAllByBankId(1L));
+        assertEquals(HttpStatus.BAD_REQUEST,bankException.getHttpStatus());
+
     }
 
     @Test
